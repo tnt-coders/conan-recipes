@@ -9,23 +9,9 @@ recipes/<package>/all/conandata.yml
 recipes/<package>/all/test_package/
 ```
 
-`cmake/LocalConanRecipesProvider.cmake` registers this checkout as a recipes-only
-`local-recipes-index` remote for the active `CONAN_HOME` before delegating to a consuming project's
-`cmake-conan` provider.
-
-Consuming projects can use this repository as a submodule or as a normal sibling checkout. Point
-`CMAKE_PROJECT_TOP_LEVEL_INCLUDES` at the provider:
-
-```json
-"CMAKE_PROJECT_TOP_LEVEL_INCLUDES":
-    "${sourceDir}/conan-recipes/cmake/LocalConanRecipesProvider.cmake"
-```
-
-The provider defaults to `${CMAKE_SOURCE_DIR}/project-config/cmake-conan/conan_provider.cmake`.
-Set `LOCAL_CONAN_RECIPES_CMAKE_CONAN_PROVIDER` when a project keeps `cmake-conan` elsewhere.
-
-Set `LOCAL_CONAN_RECIPES_ALLOWED_PACKAGES` to a semicolon-separated list such as `libebur128/*`
-when a project wants this recipes index restricted to specific packages.
+Consuming projects can use this repository as a top-level `conan-recipes/` submodule or checkout.
+The `cmake-conan` provider in `project-config` automatically registers that checkout as a
+recipes-only local Conan remote when it is present.
 
 Keep recipes close to ConanCenter style so packages can be moved upstream later with minimal
 rewriting.
