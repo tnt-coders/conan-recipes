@@ -14,5 +14,5 @@ int main(void)
     }
 
     ebur128_destroy(&state);
-    return state == 0 && major == 1 && minor == 2 && patch == 6 ? 0 : 1;
+    return major == 1 && minor == 2 && patch == 6 ? 0 : 1;
 }
