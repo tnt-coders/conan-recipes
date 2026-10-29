@@ -12,7 +12,7 @@ class Libebur128Conan(ConanFile):
     description = "Library implementing the EBU R128 loudness standard"
     license = "MIT"
     homepage = "https://github.com/jiixyj/libebur128"
-    url = "https://github.com/TNT-Music-Studios/conan-recipes"
+    url = "https://github.com/tnt-music-studios/conan-recipes"
     topics = ("audio", "loudness", "ebu-r128", "lufs")
     package_type = "library"
 
