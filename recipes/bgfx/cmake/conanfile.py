@@ -4,7 +4,7 @@ from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
 from conan.tools.apple import is_apple_os
 from conan.tools.microsoft import is_msvc
-from conan.errors import ConanInvalidConfiguration
+from conan.errors import ConanException, ConanInvalidConfiguration
 import os
 
 
@@ -41,8 +41,8 @@ class bgfxConan(ConanFile):
             # LOCAL FIX (RockHero conan-recipes shadow of conancenter revision
             # c1afac7cfc793827c09745e6d6887e57): upstream pins wayland/1.23.92 exactly, which
             # conflicts with sdl/xkbcommon's wayland/[>=1.22 <2] range resolving newer. A range
-            # matches how every sibling consumes wayland; drop this shadow once conan-center-index
-            # relaxes the pin upstream.
+            # matches how every sibling consumes wayland. The shadow also packages the libraries'
+            # own licences (package() below); drop it once conan-center-index fixes both upstream.
             self.requires("wayland/[>=1.22 <2]")
         # INFO: miniz, tinyexr and libsquish are vendored in bgfx as well
         self.requires("miniz/3.0.2")
@@ -87,7 +87,13 @@ class bgfxConan(ConanFile):
         cmake.build()
 
     def package(self):
-        copy(self, pattern="LICENSE", dst=os.path.join(self.package_folder, "licenses"), src=self.source_folder)
+        # LOCAL FIX (see the wayland note above): upstream copies only the source root's LICENSE,
+        # which is the bgfx.cmake wrapper's CC0, never the BSD-2-Clause texts of the three libraries
+        # the package is built from and that their binaries must reproduce.
+        for library in ("bgfx", "bimg", "bx"):
+            if not copy(self, pattern="LICENSE", dst=os.path.join(self.package_folder, "licenses", library),
+                        src=os.path.join(self.source_folder, library)):
+                raise ConanException(f"bgfx's source carries no {library}/LICENSE to package")
         cmake = CMake(self)
         cmake.install()
 
